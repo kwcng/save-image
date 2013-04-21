@@ -1,6 +1,52 @@
-*.class
+import java.io.*;
+import java.net.*;
+public class saveimage {
 
-# Package Files #
-*.jar
-*.war
-*.ear
+  public static void main(String[] args) throws IOException {
+		try{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Please input your URL");
+			String link = reader.readLine();
+			String image = getImageUrl(link);
+			String fileName = "image.jpg";
+			save(image, fileName);
+			System.out.print("Done. The image is saved.");
+		} catch (NumberFormatException e) {
+            System.out.println("Invalid input");
+        }
+	}
+	 private static String getImageUrl(String link) throws IOException {
+         URL linkurl = new URL(link);
+         URLConnection yc = linkurl.openConnection();
+         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), "UTF-8"));
+         String inputLine;
+         while ((inputLine = in.readLine()) != null){
+             int intIndex = inputLine.indexOf("image");
+             if(intIndex != - 1){
+                break;
+             }
+         }
+         String[] words = inputLine.split("href=\"");
+         inputLine = words[1];
+         words = inputLine.split("\"");
+         inputLine = words[0];       
+         in.close();
+         return inputLine;
+     }
+	 private static void save(String imageUrl, String fileName) throws IOException {
+			URL url = new URL(imageUrl);
+			InputStream is = url.openStream();
+			OutputStream os = new FileOutputStream(fileName);
+
+			byte[] b = new byte[2048];
+			int length;
+
+			while ((length = is.read(b)) != -1) {
+				os.write(b, 0, length);
+			}
+
+			is.close();
+			os.close();
+		}
+
+}
